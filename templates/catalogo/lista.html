@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Catálogo de jogos</h2>
+<p>Explore os jogos cadastrados em nosso catálogo.</p>
+
+<form method="GET" class="filtros">
+
+    <div class="campo">
+        <label for="pesquisa">Pesquisar jogo</label>
+
+        <input type="text"
+               id="pesquisa"
+               name="pesquisa"
+               placeholder="Nome do jogo"
+               value="{{ pesquisa }}">
+    </div>
+
+    <div class="campo">
+        <label for="desenvolvedora">Desenvolvedora</label>
+
+        <select name="desenvolvedora" id="desenvolvedora">
+            <option value="">Todas</option>
+
+            {% for dev in desenvolvedoras %}
+                <option value="{{ dev.id }}"
+                    {% if desenvolvedora_selecionada == dev.id|stringformat:"s" %}
+                        selected
+                    {% endif %}>
+                    {{ dev.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="campo">
+        <label for="plataforma">Plataforma</label>
+
+        <select name="plataforma" id="plataforma">
+            <option value="">Todas</option>
+
+            {% for plat in plataformas %}
+                <option value="{{ plat.id }}"
+                    {% if plataforma_selecionada == plat.id|stringformat:"s" %}
+                        selected
+                    {% endif %}>
+                    {{ plat.nome }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <button type="submit">Filtrar</button>
+
+    <a href="{% url 'lista_jogos' %}" class="limpar">
+        Limpar
+    </a>
+
+</form>
+
+<p class="resultados">
+    {{ jogos.paginator.count }} jogo(s) encontrado(s).
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Jogo</th>
+            <th>Desenvolvedora</th>
+            <th>Plataforma</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for jogo in jogos %}
+            <tr>
+                <td>{{ jogo.nome }}</td>
+                <td>{{ jogo.desenvolvedora.nome }}</td>
+                <td>{{ jogo.plataforma.nome }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3">Nenhum jogo encontrado.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="paginacao">
+
+    {% if jogos.has_previous %}
+        <a href="?page={{ jogos.previous_page_number }}&amp;pesquisa={{ pesquisa|urlencode }}&amp;desenvolvedora={{ desenvolvedora_selecionada|urlencode }}&amp;plataforma={{ plataforma_selecionada|urlencode }}">
+            Anterior
+        </a>
+    {% endif %}
+
+    <span>
+        Página {{ jogos.number }} de {{ jogos.paginator.num_pages }}
+    </span>
+
+    {% if jogos.has_next %}
+        <a href="?page={{ jogos.next_page_number }}&amp;pesquisa={{ pesquisa|urlencode }}&amp;desenvolvedora={{ desenvolvedora_selecionada|urlencode }}&amp;plataforma={{ plataforma_selecionada|urlencode }}">
+            Próxima
+        </a>
+    {% endif %}
+
+</div>
+
+{% endblock %}
